@@ -1,27 +1,29 @@
 use std::fs::File;
 use std::io::{BufRead, BufReader};
 
-// Advent of code Day One Puzzle
-// Also, my first RUST program ever :)
-// I made it very verbose on purpose
+// So I had this all in the main function for part one of the puzzle but
+// now I am exploring functions with RUST, passing params, return types,
+// etc. I moved the file reader to its own function since it is needed
+// in part one and two.  Also created a function for each puzzle part
+// and calling them from main.
 
-fn main() {
+// Pass in a file name and returns a file buffer reader.  This assumes
+// the file is in the root project directory.
+fn get_file_reader(filename: &str) -> BufReader<File> {
+    let measurements = File::open(filename).unwrap();
+    return BufReader::new(measurements);
+}
 
-    // file containing the measurements
-    let measurements_file_name = "measurements.txt";
-
+fn part_one() {
     // initialize some variables
     let mut _increases: i32 = 0;
     let mut _decreases: i32 = 0;
     let mut last: i32 = 0;
 
-    // open measurements file and create a buffered reader
-    let measurements = File::open(measurements_file_name).unwrap();
-    let reader = BufReader::new(measurements);
-
     println!("===============================================================");
 
     // Iterate over measurements file line by line
+    let reader = get_file_reader("measurements.txt");
     for (index, line) in reader.lines().enumerate() {
 
         // convert string to an int
@@ -54,5 +56,17 @@ fn main() {
 
     // print the results
     print!("TOTALS \nINCREASES = {}\nDECREASES = {}", _increases, _decreases);
+}
+
+fn part_two() {
+    let reader = get_file_reader("measurements.txt");
+    for (index, line) in reader.lines().enumerate() {
+        println!("{}", line.unwrap());
+    }
+}
+
+fn main() {
+    part_one();
+    part_two();
 }
 
