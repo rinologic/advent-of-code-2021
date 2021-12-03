@@ -43,21 +43,49 @@ fn part_one() {
     println!("{}" , gamma_dec * epsilon_dec);
 }
 
-fn part_two() {
+fn part_two_o2() {
     println!("Part Two");
-    let reader = get_file_reader("sample_data.txt");
+    println!("===================================");
+    println!("O2");
+    let reader = get_file_reader("data.txt");
     let mut all_values: Vec<String> = Vec::new();
     for (_index, _line) in reader.lines().enumerate() {
         all_values.push(_line.unwrap());
     }
-    let mut new_array = Vec::new();
-    for x in 0..5 {
-        let value = get_high_count_by_column(&all_values, x+1);
-        println!("{} = {}", x, value);
-        new_array = filter(&all_values, value, x);
+    let one_or_zero = get_high_count_by_column(&all_values, 1);
+    let mut new_array = filter(&all_values, one_or_zero, 0);
+    for x in 2..12 {
+        if new_array.len() > 1 {
+            let one_or_zero = get_high_count_by_column(&new_array, x);
+            new_array = filter(&new_array, one_or_zero, x - 1);
+        }
     }
     for (index, data) in new_array.iter().enumerate() {
-        println!("{}", data);
+        let os_dec = isize::from_str_radix(&data, 2).unwrap();
+        println!("{} = {}", data, os_dec);
+    }
+}
+
+fn part_two_co2() {
+    println!("Part Two");
+    println!("===================================");
+    println!("CO2");
+    let reader = get_file_reader("data.txt");
+    let mut all_values: Vec<String> = Vec::new();
+    for (_index, _line) in reader.lines().enumerate() {
+        all_values.push(_line.unwrap());
+    }
+    let one_or_zero = get_low_count_by_column(&all_values, 1);
+    let mut new_array = filter(&all_values, one_or_zero, 0);
+    for x in 2..12 {
+        if new_array.len() > 1 {
+            let one_or_zero = get_low_count_by_column(&new_array, x);
+            new_array = filter(&new_array, one_or_zero, x - 1);
+        }
+    }
+    for (index, data) in new_array.iter().enumerate() {
+        let os_dec = isize::from_str_radix(&data, 2).unwrap();
+        println!("{} = {}", data, os_dec);
     }
 }
 
@@ -77,9 +105,33 @@ fn get_high_count_by_column(values: &Vec<String>, column: usize) -> &'static str
     }
     if _one > _zero {
         return "1";
-    } else {
+    }
+    if _one == _zero {
+        return "1";
+    }
+    return "0";
+}
+
+fn get_low_count_by_column(values: &Vec<String>, column: usize) -> &'static str {
+    let mut _zero: i32 = 0;
+    let mut _one: i32 = 0;
+    for (index, data) in values.iter().enumerate() {
+        let v: Vec<&str> = data.split("").collect();
+        let v_int: i32 = v[column].parse().unwrap();
+        if v_int == 0 {
+            _zero += 1;
+        }
+        if v_int == 1 {
+            _one += 1;
+        }
+    }
+    if _one < _zero {
+        return "1";
+    }
+    if _one == _zero {
         return "0";
     }
+    return "0";
 }
 
 fn filter(values: &Vec<String>, x: &str, position: usize) -> Vec<String> {
@@ -94,5 +146,6 @@ fn filter(values: &Vec<String>, x: &str, position: usize) -> Vec<String> {
 
 fn main() {
     part_one();
-    part_two();
+    part_two_o2();
+    part_two_co2();
 }
