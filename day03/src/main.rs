@@ -70,7 +70,7 @@ fn part_two_o2() {
             new_array = filter(&new_array, one_or_zero, x - 1);
         }
     }
-    for (index, data) in new_array.iter().enumerate() {
+    for (_index, data) in new_array.iter().enumerate() {
         if data.ends_with("1") { // total hack but filters out non 1 values in last column
             let os_dec = isize::from_str_radix(&data, 2).unwrap();
             println!("{} = {}", data, os_dec);
@@ -94,7 +94,7 @@ fn part_two_co2() {
             new_array = filter(&new_array, one_or_zero, x - 1);
         }
     }
-    for (index, data) in new_array.iter().enumerate() {
+    for (_index, data) in new_array.iter().enumerate() {
         if data.ends_with("0") {
             let os_dec = isize::from_str_radix(&data, 2).unwrap();
             println!("{} = {}", data, os_dec);
@@ -106,7 +106,7 @@ fn part_two_co2() {
 fn get_high_count_by_column(values: &Vec<String>, column: usize) -> &'static str {
     let mut _zero: i32 = 0;
     let mut _one: i32 = 0;
-    for (index, data) in values.iter().enumerate() {
+    for (_index, data) in values.iter().enumerate() {
         let v: Vec<&str> = data.split("").collect();
         let v_int: i32 = v[column].parse().unwrap();
         if v_int == 0 {
@@ -128,7 +128,7 @@ fn get_high_count_by_column(values: &Vec<String>, column: usize) -> &'static str
 fn get_low_count_by_column(values: &Vec<String>, column: usize) -> &'static str {
     let mut _zero: i32 = 0;
     let mut _one: i32 = 0;
-    for (index, data) in values.iter().enumerate() {
+    for (_index, data) in values.iter().enumerate() {
         let v: Vec<&str> = data.split("").collect();
         let v_int: i32 = v[column].parse().unwrap();
         if v_int == 0 {
@@ -149,7 +149,7 @@ fn get_low_count_by_column(values: &Vec<String>, column: usize) -> &'static str 
 
 fn filter(values: &Vec<String>, x: &str, position: usize) -> Vec<String> {
     let mut reduced_array: Vec<String> = Vec::new();
-    for (index, data) in values.iter().enumerate() {
+    for (_index, data) in values.iter().enumerate() {
         if data.chars().nth(position).unwrap() == x.chars().nth(0).unwrap() {
             reduced_array.push(data.clone());
         }
