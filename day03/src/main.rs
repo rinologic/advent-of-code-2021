@@ -45,48 +45,51 @@ fn part_one() {
 
 fn part_two() {
     println!("Part Two");
-    for b in 1..2 {
-        let mut _zero: i32 = 0;
-        let mut _one: i32 = 0;
-        let reader = get_file_reader("sample_data.txt");
-        let mut all_values: Vec<String> = Vec::new();
-        let mut o2_values: Vec<String> = Vec::new();
-        let mut co2_values: Vec<String> = Vec::new();
-        for (_index, _line) in reader.lines().enumerate() {
-            all_values.push(_line.unwrap());
-        }
-        o2_values = all_values.clone();
-        co2_values = all_values.clone();
-
-        for (_index, _line) in all_values.iter().enumerate() {
-            let data = _line;
-            let v: Vec<&str> = data.split("").collect();
-            let v_int: i32 = v[b].parse().unwrap();
-            if v_int == 0 {
-                _zero += 1;
-            }
-            if v_int == 1 {
-                _one += 1;
-            }
-        }
-        if _one > _zero {
-            filter(o2_values, "1", 0);
-        } else {
-            filter(o2_values, "0", 0);
-        }
+    let reader = get_file_reader("sample_data.txt");
+    let mut all_values: Vec<String> = Vec::new();
+    for (_index, _line) in reader.lines().enumerate() {
+        all_values.push(_line.unwrap());
+    }
+    let mut new_array = Vec::new();
+    for x in 0..5 {
+        let value = get_high_count_by_column(&all_values, x+1);
+        println!("{} = {}", x, value);
+        new_array = filter(&all_values, value, x);
+    }
+    for (index, data) in new_array.iter().enumerate() {
+        println!("{}", data);
     }
 }
 
-fn filter(values: Vec<String>, x: &str, position: usize) {
-    let mut reduced_array: Vec<&String> = Vec::new();
+
+fn get_high_count_by_column(values: &Vec<String>, column: usize) -> &'static str {
+    let mut _zero: i32 = 0;
+    let mut _one: i32 = 0;
     for (index, data) in values.iter().enumerate() {
-        if data.chars().nth(position).unwrap() == x.chars().nth(0).unwrap() {
-            reduced_array.push(data);
+        let v: Vec<&str> = data.split("").collect();
+        let v_int: i32 = v[column].parse().unwrap();
+        if v_int == 0 {
+            _zero += 1;
+        }
+        if v_int == 1 {
+            _one += 1;
         }
     }
-    for value in reduced_array {
-        println!("{}", value);
+    if _one > _zero {
+        return "1";
+    } else {
+        return "0";
     }
+}
+
+fn filter(values: &Vec<String>, x: &str, position: usize) -> Vec<String> {
+    let mut reduced_array: Vec<String> = Vec::new();
+    for (index, data) in values.iter().enumerate() {
+        if data.chars().nth(position).unwrap() == x.chars().nth(0).unwrap() {
+            reduced_array.push(data.clone());
+        }
+    }
+    return reduced_array;
 }
 
 fn main() {
