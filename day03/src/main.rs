@@ -1,14 +1,25 @@
 use std::fs::File;
 use std::io::{BufRead, BufReader};
 
+// The part two code is super sloppy and inefficient.
+// I was just glad to get it working.  Obviously I can
+// refactor the get high/low count functions into one
+// but I just wanted to get it done as soon as possible.
+// Also I can refactor the o2 co2 functions. I will
+// continue to work on optimizing it.  Also, I know
+// that the way I am doing things in Rust is probably
+// not very "Rust-like" but so far what you see below
+// is the only way I have figured it out.  Lot's
+// more reading to do!
+
 fn get_file_reader(filename: &str) -> BufReader<File> {
     let datafile = File::open(filename).unwrap();
     return BufReader::new(datafile);
 }
 
 fn part_one() {
+    println!("===================================");
     println!("Part One");
-    println!("--------------------------------");
     let mut gamma_string: String = "".to_owned();
     let mut epsilon_string: String = "".to_owned();
     for b in 1..13 {
@@ -44,9 +55,8 @@ fn part_one() {
 }
 
 fn part_two_o2() {
-    println!("Part Two");
     println!("===================================");
-    println!("O2");
+    println!("Part Two - O2");
     let reader = get_file_reader("data.txt");
     let mut all_values: Vec<String> = Vec::new();
     for (_index, _line) in reader.lines().enumerate() {
@@ -61,15 +71,16 @@ fn part_two_o2() {
         }
     }
     for (index, data) in new_array.iter().enumerate() {
-        let os_dec = isize::from_str_radix(&data, 2).unwrap();
-        println!("{} = {}", data, os_dec);
+        if data.ends_with("1") { // total hack but filters out non 1 values in last column
+            let os_dec = isize::from_str_radix(&data, 2).unwrap();
+            println!("{} = {}", data, os_dec);
+        }
     }
 }
 
 fn part_two_co2() {
-    println!("Part Two");
     println!("===================================");
-    println!("CO2");
+    println!("Part Two - CO2");
     let reader = get_file_reader("data.txt");
     let mut all_values: Vec<String> = Vec::new();
     for (_index, _line) in reader.lines().enumerate() {
@@ -84,8 +95,10 @@ fn part_two_co2() {
         }
     }
     for (index, data) in new_array.iter().enumerate() {
-        let os_dec = isize::from_str_radix(&data, 2).unwrap();
-        println!("{} = {}", data, os_dec);
+        if data.ends_with("0") {
+            let os_dec = isize::from_str_radix(&data, 2).unwrap();
+            println!("{} = {}", data, os_dec);
+        }
     }
 }
 
