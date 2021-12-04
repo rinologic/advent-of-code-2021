@@ -1,15 +1,21 @@
 use std::fs::File;
 use std::io::{BufRead, BufReader};
 
+// We are going to load up two boards, one will be the game boards with all the values
+// the second will be boards used to record matches.  That board will be the exact same as
+// the game board but we will replace a match with a -1.  To get the final total, we
+// can use the corresponding game board as a reference.
+
+// Note that the reason I used two boards initially was because I thought I would have
+// to add up the already called numbers.  I realize now I could have used the same board
+// to make the calculations.  Was still nice to have two boards as a reference when
+// the winning board was detected.
+
 fn get_file_reader(filename: &str) -> BufReader<File> {
         let datafile = File::open(filename).unwrap();
         return BufReader::new(datafile);
 }
 
-// We are going to load up two boards, one will be the game boards with all the values
-// the second will be boards used to record matches.  Those will be the exact same as
-// the game boards but we will replace a match with a M.  To get the final total, we
-// can use the corresponding game board as a reference.
 fn load_boards(game_boards: &mut Vec<Vec<Vec<i32>>>, match_boards: &mut Vec<Vec<Vec<i32>>>,
                board_width: usize, board_height: usize) {
 
@@ -17,15 +23,6 @@ fn load_boards(game_boards: &mut Vec<Vec<Vec<i32>>>, match_boards: &mut Vec<Vec<
     let mut board_data: Vec<String> = Vec::new();
     for (_index, line) in board_data_file.lines().enumerate() {
         board_data.push(line.unwrap());
-    }
-
-    // First we determine how many boards are in the file
-    // Count the number of lines that are not spaces and
-    // divide by the board height
-    for (_index, _line) in board_data.iter().enumerate() {
-        if _line == "" {
-            // a space, next array
-        }
     }
 
     let mut row = 0;
@@ -57,13 +54,13 @@ fn load_boards(game_boards: &mut Vec<Vec<Vec<i32>>>, match_boards: &mut Vec<Vec<
             }
         }
     }
-    game_boards.remove(0); // Not sure yet why the first game board is empty
+
+    // Not sure yet why the first game board is empty
+    game_boards.remove(0);
     match_boards.remove(0);
 }
 
 fn announce_winner(board_number: usize, gb: Vec<Vec<Vec<i32>>>, mb: Vec<Vec<Vec<i32>>>, bingo_number: i32, col_row: &str, col_row_num: usize)  {
-
-    // 1760 was too low
 
     println!("BOARD {} IS A WINNER WITH THE CALL OF {} on {} {}!", board_number + 1, bingo_number, col_row, col_row_num+1);
     let game_board = gb.get(board_number);
@@ -103,7 +100,6 @@ fn main() {
     load_boards(&mut game_boards, &mut match_boards, board_width, board_height);
 
     let bingo_numbers = [ 84,28,29,75,58,71,26,6,73,74,41,39,87,37,16,79,55,60,62,80,64,95,46,15,5,47,2,35,32,78,89,90,96,33,4,69,42,30,54,85,65,83,44,63,20,17,66,81,67,77,36,68,82,93,10,25,9,34,24,72,91,88,11,38,3,45,14,56,22,61,97,27,12,48,18,1,31,98,86,19,99,92,8,43,52,23,21,0,7,50,57,70,49,13,51,40,76,94,53,59 ];
-
 
     // We iterate through the match board and set the value to -1 if there is a match
     for bingo_number in bingo_numbers {
@@ -146,8 +142,4 @@ fn main() {
             }
         }
     }
-    //println!("\nWITH MATCHES RECORDED");
-    //for g in match_boards.iter() {
-    //    println!("{:?}", g);
-    //}
 }
