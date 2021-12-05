@@ -60,7 +60,7 @@ fn load_boards(game_boards: &mut Vec<Vec<Vec<i32>>>, match_boards: &mut Vec<Vec<
 }
 
 fn announce_winner(board_number: usize, gb: Vec<Vec<Vec<i32>>>, mb: Vec<Vec<Vec<i32>>>, bingo_number: i32)  {
-    println!("=======");
+    println!("=======================================================================");
     println!("BOARD {} IS A WINNER WITH THE CALL OF {}!", board_number, bingo_number);
     let game_board = gb.get(board_number);
     let match_board = mb.get(board_number);
@@ -110,7 +110,7 @@ fn part_one() {
 
 fn is_row_win(match_board: &Vec<Vec<i32>>) -> bool {
     let mut winner = false;
-    for i in 0..4 {
+    for i in 0..5 {
         if  match_board[0][i] == -1 &&
             match_board[1][i] == -1 &&
             match_board[2][i] == -1 &&
@@ -124,7 +124,7 @@ fn is_row_win(match_board: &Vec<Vec<i32>>) -> bool {
 
 fn is_column_win(match_board: &Vec<Vec<i32>>) -> bool {
     let mut winner = false;
-    for i in 0..4 {
+    for i in 0..5 {
         if  match_board[i][0] == -1 &&
             match_board[i][1] == -1 &&
             match_board[i][2] == -1 &&
@@ -153,7 +153,8 @@ fn part_two() {
     let board_height = 5;
     let mut game_boards = vec![vec![vec![0; board_width]; board_height]];
     let mut match_boards = vec![vec![vec![0; board_width]; board_height]];
-    let mut winning_boards:Vec<usize> = vec![];
+    let mut winning_boards:Vec<usize> = vec![];  // track winning boards
+    let mut winning_numbers:Vec<i32> = vec![];   // track winning numbers - if had more time, would make a board object to track various properties
 
     // Load the boards up with the board data
     load_boards(&mut game_boards, &mut match_boards, board_width, board_height);
@@ -170,30 +171,18 @@ fn part_two() {
                 // Now, check the boards for a win
                 if is_row_win(match_boards.get(b).unwrap()) ||
                     is_column_win(match_boards.get(b).unwrap()) {
-
-                    // I know from experimentation that the board 32 is the last official winner and
-                    // therefore was able to solve the puzzle. But my current logic is showing that boards
-                    // 15 and 28 win after 32.  Still trying to figure out what I am missing.
-                    if b == 32 {
-                        announce_winner(b, game_boards.clone(), match_boards.clone(), bingo_number);
-                    }
                     winning_boards.push(b);
+                    winning_numbers.push(bingo_number);
                 }
             }
         }
     } // next bingo number
-    println!("\nWIN ORDER: "); // display win order for troubleshooting
-    let mut next_line_trigger: usize = 0;
-    for n in winning_boards {
-        next_line_trigger += 1;
-        print!("{} ", n);
-        if next_line_trigger % 50 == 0 {
-        println!();
-        }
-    }
+    announce_winner(winning_boards[winning_boards.len()-1], game_boards.clone(),
+                    match_boards.clone(), winning_numbers[winning_boards.len()-1]);
 }
 
 fn main() {
     part_one();
+    println!();
     part_two();
 }
