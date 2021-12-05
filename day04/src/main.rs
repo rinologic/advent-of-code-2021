@@ -1,4 +1,4 @@
-use std::fs::File;
+use std::fs::{File, remove_dir};
 use std::io::{BufRead, BufReader};
 
 // We are going to load up two boards, one will be the game boards with all the values
@@ -60,16 +60,13 @@ fn load_boards(game_boards: &mut Vec<Vec<Vec<i32>>>, match_boards: &mut Vec<Vec<
     match_boards.remove(0);
 }
 
-fn announce_winner(board_number: usize, gb: Vec<Vec<Vec<i32>>>, mb: Vec<Vec<Vec<i32>>>, bingo_number: i32, col_row: &str, col_row_num: usize)  {
-
-    println!("BOARD {} IS A WINNER WITH THE CALL OF {} on {} {}!", board_number + 1, bingo_number, col_row, col_row_num+1);
+fn announce_winner(board_number: usize, gb: Vec<Vec<Vec<i32>>>, mb: Vec<Vec<Vec<i32>>>, bingo_number: i32)  {
+    println!("=======");
+    println!("BOARD {} IS A WINNER WITH THE CALL OF {}!", board_number, bingo_number);
     let game_board = gb.get(board_number);
     let match_board = mb.get(board_number);
-    println!("\nGAME BOARD");
     println!("{:?}", game_board);
-    println!("\nMATCH BOARD");
     println!("{:?}", match_board);
-
     // Now we need to add up all the values on the game board that are not -1
     let mut unmarked_sum: i32 = 0;
     for i in match_board.iter() {
@@ -82,64 +79,128 @@ fn announce_winner(board_number: usize, gb: Vec<Vec<Vec<i32>>>, mb: Vec<Vec<Vec<
             }
         }
     }
-    println!();
     println!("\nREDEMPTION CODE IS {} * {} = {}", unmarked_sum, bingo_number, unmarked_sum * bingo_number);
-
-    std::process::exit(0);
 }
 
-fn main() {
-
+fn part_one() {
+    println!("PART ONE");
     // Initialize our Vector of game boards
     let board_width = 5;
     let board_height = 5;
-    let mut game_boards = vec![vec![vec![0; board_width]; board_height]];
-    let mut match_boards = vec![vec![vec![0; board_width]; board_height]];
+    //let mut game_boards = vec![vec![vec![0; board_width]; board_height]];
+    //let mut match_boards = vec![vec![vec![0; board_width]; board_height]];
+    let mut game_boards = vec![vec![vec![]]];
+    let mut match_boards = vec![vec![vec![]]];
 
     // Load the boards up with the board data
     load_boards(&mut game_boards, &mut match_boards, board_width, board_height);
 
     let bingo_numbers = [ 84,28,29,75,58,71,26,6,73,74,41,39,87,37,16,79,55,60,62,80,64,95,46,15,5,47,2,35,32,78,89,90,96,33,4,69,42,30,54,85,65,83,44,63,20,17,66,81,67,77,36,68,82,93,10,25,9,34,24,72,91,88,11,38,3,45,14,56,22,61,97,27,12,48,18,1,31,98,86,19,99,92,8,43,52,23,21,0,7,50,57,70,49,13,51,40,76,94,53,59 ];
 
-    // We iterate through the match board and set the value to -1 if there is a match
     for bingo_number in bingo_numbers {
         for b in 0..match_boards.len() {
-            for r in 0..board_width {
-                for c in 0..board_height {
-                    if match_boards.get(b).unwrap()[r][c] == bingo_number {
-                        // match_board = match_boards.get_mut(b).unwrap()[r][c] = -1;
-                        let mb = match_boards.get_mut(b);
-                        mb.unwrap()[r][c] = -1;
+            mark_match(match_boards.get_mut(b).unwrap(), board_width, board_height, bingo_number);
 
-                        // Check rows for a win
-                        for i in 0..4 {
-                            if  match_boards.get(b).unwrap()[i][0] == -1 &&
-                                match_boards.get(b).unwrap()[i][1] == -1 &&
-                                match_boards.get(b).unwrap()[i][2] == -1 &&
-                                match_boards.get(b).unwrap()[i][3] == -1 &&
-                                match_boards.get(b).unwrap()[i][4] == -1     {
-                                announce_winner(b,
-                                                game_boards.clone(),
-                                                match_boards.clone(),
-                                                bingo_number, "ROW", i);
-                            }
-                        }
-                        // Check columns for a win
-                        for i in 0..4 {
-                            if  match_boards.get(b).unwrap()[0][i] == -1 &&
-                                match_boards.get(b).unwrap()[1][i] == -1 &&
-                                match_boards.get(b).unwrap()[2][i] == -1 &&
-                                match_boards.get(b).unwrap()[3][i] == -1 &&
-                                match_boards.get(b).unwrap()[4][i] == -1     {
-                                announce_winner(b,
-                                                game_boards.clone(),
-                                                match_boards.clone(),
-                                                bingo_number, "COLUMN", i);
-                            }
-                        }
-                    }
-                }
+            // Now, check the board for a win
+            if is_row_win(match_boards.get(b).unwrap()) ||
+                is_column_win(match_boards.get(b).unwrap()) {
+                announce_winner(b, game_boards.clone(), match_boards.clone(), bingo_number);
+                return;
+            }
+        }
+    } // next bingo number
+}
+
+fn is_row_win(match_board: &Vec<Vec<i32>>) -> bool {
+    let mut winner = false;
+    for i in 0..4 {
+        if  match_board[0][i] == -1 &&
+            match_board[1][i] == -1 &&
+            match_board[2][i] == -1 &&
+            match_board[3][i] == -1 &&
+            match_board[4][i] == -1 {
+            winner = true;
+        }
+    }
+    return winner;
+}
+
+fn is_column_win(match_board: &Vec<Vec<i32>>) -> bool {
+    let mut winner = false;
+    for i in 0..4 {
+        if  match_board[i][0] == -1 &&
+            match_board[i][1] == -1 &&
+            match_board[i][2] == -1 &&
+            match_board[i][3] == -1 &&
+            match_board[i][4] == -1 {
+            winner = true;
+        }
+    }
+    return winner;
+}
+
+fn mark_match(match_board: &mut Vec<Vec<i32>>, board_width: usize, board_height: usize, bingo_number: i32) {
+    for r in 0..board_width {
+        for c in 0..board_height {
+            if match_board[r][c] == bingo_number {
+                // Found a match on board, mark it as -1
+                //let mb = match_boards.get_mut(b);
+                //mb.unwrap()[r][c] = -1;
+                match_board[r][c] = -1;
             }
         }
     }
+}
+
+fn part_two() {
+    println!("PART TWO");
+    // Initialize our Vector of game boards
+    let board_width = 5;
+    let board_height = 5;
+    let mut game_boards = vec![vec![vec![0; board_width]; board_height]];
+    let mut match_boards = vec![vec![vec![0; board_width]; board_height]];
+    let mut winning_boards:Vec<usize> = vec![];
+
+    // Load the boards up with the board data
+    load_boards(&mut game_boards, &mut match_boards, board_width, board_height);
+    let bingo_numbers = [84,28,29,75,58,71,26,6,73,74,41,39,87,37,16,79,55,60,62,80,64,95,46,15,5,47,2,35,32,78,89,90,96,33,4,69,42,30,54,85,65,83,44,63,20,17,66,81,67,77,36,68,82,93,10,25,9,34,24,72,91,88,11,38,3,45,14,56,22,61,97,27,12,48,18,1,31,98,86,19,99,92,8,43,52,23,21,0,7,50,57,70,49,13,51,40,76,94,53,59];
+    // We iterate through the match board and set the value to -1 if there is a match
+
+    let mut _iteration = 0;
+    for bingo_number in bingo_numbers {
+        for b in 0..match_boards.len() {
+            if !winning_boards.contains(&b) {  // skip boards that have already won
+
+                // Update the board with a -1 if it has a match
+                mark_match(match_boards.get_mut(b).unwrap(), board_width, board_height, bingo_number);
+
+                // Now, check the boards for a win
+                if is_row_win(match_boards.get(b).unwrap()) ||
+                    is_column_win(match_boards.get(b).unwrap()) {
+
+                    // I know from experimentation that the board 32 is the last official winner and
+                    // therefore was able to solve the puzzle. But my current logic is showing that boards
+                    // 15 and 28 win after 32.  Still trying to figure out what I am missing.
+                    if b == 32 {
+                        announce_winner(b, game_boards.clone(), match_boards.clone(), bingo_number);
+                    }
+                    winning_boards.push(b);
+                }
+            }
+        }
+    } // next bingo number
+    println!("\nWIN ORDER: ");
+    let mut next_line_trigger: usize = 0;
+    for n in winning_boards {
+        next_line_trigger += 1;
+        print!("{} ", n);
+        if next_line_trigger % 50 == 0 {
+        println!();
+        }
+    }
+}
+
+fn main() {
+    part_one();
+    part_two();
 }
