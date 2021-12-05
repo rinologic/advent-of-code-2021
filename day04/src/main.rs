@@ -59,13 +59,23 @@ fn load_boards(game_boards: &mut Vec<Vec<Vec<i32>>>, match_boards: &mut Vec<Vec<
     match_boards.remove(0);
 }
 
+fn pretty_print_board(board: Option<&Vec<Vec<i32>>>) {
+    for r in 0..5 {
+        for c in 0..5 {
+            print!(" {:width$}", board.unwrap()[r][c], width=2);
+        }
+        println!();
+    }
+}
+
 fn announce_winner(board_number: usize, gb: Vec<Vec<Vec<i32>>>, mb: Vec<Vec<Vec<i32>>>, bingo_number: i32)  {
     println!("=======================================================================");
-    println!("BOARD {} IS A WINNER WITH THE CALL OF {}!", board_number, bingo_number);
+    println!("BOARD {} IS A WINNER WITH THE CALL OF {}!\n", board_number, bingo_number);
     let game_board = gb.get(board_number);
     let match_board = mb.get(board_number);
-    println!("{:?}", game_board);
-    println!("{:?}", match_board);
+    pretty_print_board(game_board);
+    println!();
+    pretty_print_board(match_board);
     // Now we need to add up all the values on the game board that are not -1
     let mut unmarked_sum: i32 = 0;
     for i in match_board.iter() {
@@ -73,7 +83,6 @@ fn announce_winner(board_number: usize, gb: Vec<Vec<Vec<i32>>>, mb: Vec<Vec<Vec<
             for c in 0..5 {
                 if i[r][c] != -1 && i[r][c] != bingo_number {
                     unmarked_sum += i[r][c];
-                    print!("{} ", i[r][c])
                 }
             }
         }
