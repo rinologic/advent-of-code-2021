@@ -88,8 +88,9 @@ fn part_two() {
     println!("BEFORE: {:?}", unique_fish_counts);
 
     for _day in 0..days {
-        unique_fish_counts.rotate_left(1);  
+        unique_fish_counts.rotate_left(1);
         unique_fish_counts[6] += unique_fish_counts[8];
+        println!("  DAY {}: {:?}", _day+1, unique_fish_counts);
     }
 
     // after
@@ -118,4 +119,25 @@ fn part_two() {
 fn main() {
     part_one();
     part_two();
+    array_visualization();
+}
+
+fn array_visualization() {
+
+    println!("\n Some visualization of what the rotate add function is doing");
+
+    let mut day_17_array  =  [4, 3, 5, 3, 2, 2, 1, 1, 1]; // DAY 17 with sample data
+    println!("DAY 17: {:?}", day_17_array );
+
+    // now we rotate it left
+    day_17_array.rotate_left(1);
+    println!("DAY 17: {:?}  (after .rotate_left(1))", day_17_array );
+
+    // now we add
+    day_17_array[6] += day_17_array[8];
+    let mut day_18_array = day_17_array;
+    println!("DAY 18: {:?}  (after field 8 added to field 6)", day_18_array );
+
+    // now sum up the fields
+    println!("TOTALS: {}", day_18_array.into_iter().sum::<u64>());
 }
