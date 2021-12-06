@@ -68,12 +68,15 @@ fn part_two() {
     println!("\nPART TWO");
 
     // Sample data
-    //let fish_timers = [ 3 , 4 , 3, 1, 2 ];
-    //let days = 80;
+    let fish_timers = [ 3 , 4 , 3, 1, 2 ];
+    let days = 18;
 
     // Real data
-    let fish_timers = [ 5,1,5,3,2,2,3,1,1,4,2,4,1,2,1,4,1,1,5,3,5,1,5,3,1,2,4,4,1,1,3,1,1,3,1,1,5,1,5,4,5,4,5,1,3,2,4,3,5,3,5,4,3,1,4,3,1,1,1,4,5,1,1,1,2,1,2,1,1,4,1,4,1,1,3,3,2,2,4,2,1,1,5,3,1,3,1,1,4,3,3,3,1,5,2,3,1,3,1,5,2,2,1,2,1,1,1,3,4,1,1,1,5,4,1,1,1,4,4,2,1,5,4,3,1,2,5,1,1,1,1,2,1,5,5,1,1,1,1,3,1,4,1,3,1,5,1,1,1,5,5,1,4,5,4,5,4,3,3,1,3,1,1,5,5,5,5,1,2,5,4,1,1,1,2,2,1,3,1,1,2,4,2,2,2,1,1,2,2,1,5,2,1,1,2,1,3,1,3,2,2,4,3,1,2,4,5,2,1,4,5,4,2,1,1,1,5,4,1,1,4,1,4,3,1,2,5,2,4,1,1,5,1,5,4,1,1,4,1,1,5,5,1,5,4,2,5,2,5,4,1,1,4,1,2,4,1,2,2,2,1,1,1,5,5,1,2,5,1,3,4,1,1,1,1,5,3,4,1,1,2,1,1,3,5,5,2,3,5,1,1,1,5,4,3,4,2,2,1,3 ];
-    let days = 256;
+    //let fish_timers = [ 5,1,5,3,2,2,3,1,1,4,2,4,1,2,1,4,1,1,5,3,5,1,5,3,1,2,4,4,1,1,3,1,1,3,1,1,5,1,5,4,5,4,5,1,3,2,4,3,5,3,5,4,3,1,4,3,1,1,1,4,5,1,1,1,2,1,2,1,1,4,1,4,1,1,3,3,2,2,4,2,1,1,5,3,1,3,1,1,4,3,3,3,1,5,2,3,1,3,1,5,2,2,1,2,1,1,1,3,4,1,1,1,5,4,1,1,1,4,4,2,1,5,4,3,1,2,5,1,1,1,1,2,1,5,5,1,1,1,1,3,1,4,1,3,1,5,1,1,1,5,5,1,4,5,4,5,4,3,3,1,3,1,1,5,5,5,5,1,2,5,4,1,1,1,2,2,1,3,1,1,2,4,2,2,2,1,1,2,2,1,5,2,1,1,2,1,3,1,3,2,2,4,3,1,2,4,5,2,1,4,5,4,2,1,1,1,5,4,1,1,4,1,4,3,1,2,5,2,4,1,1,5,1,5,4,1,1,4,1,1,5,5,1,5,4,2,5,2,5,4,1,1,4,1,2,4,1,2,2,2,1,1,1,5,5,1,2,5,1,3,4,1,1,1,1,5,3,4,1,1,2,1,1,3,5,5,2,3,5,1,1,1,5,4,3,4,2,2,1,3 ];
+    //let days = 256;
+
+    // see how many unique timers we have
+
 
     // Create another array to hold the total unique fish timer counts in the fish timers
     let mut unique_fish_counts = [0_u64; 9];
@@ -81,20 +84,35 @@ fn part_two() {
         unique_fish_counts[fish_timer] += 1;
     }
 
-    //println!("{:?}", total_fish);
-
-    // for _day in 0..days {
-    //     unique_fish_counts.rotate_left(1);
-    //     println!("{:?}", unique_fish_counts);
-    // }
+    // before
+    println!("BEFORE: {:?}", unique_fish_counts);
 
     for _day in 0..days {
-        unique_fish_counts.rotate_left(1);
+        unique_fish_counts.rotate_left(1);  
         unique_fish_counts[6] += unique_fish_counts[8];
     }
 
+    // after
+    println!("AFTER: {:?}", unique_fish_counts); // oh my...
+
+    // With the sample scenario and data: 3,4,3,1,2
+    // from part one, looks like this before and after 18 and 80 days
+
+    // 18 days
+    // BEFORE: [0, 1, 1, 2, 1, 0, 0, 0, 0]
+    // AFTER: [3, 5, 3, 2, 2, 1, 5, 1, 4]
+    // Total fish count after 18 days is 26
+    // Look at the last line, day 18 in the puzzle, and compare the type counts to the after
+    // array and you will see they line up
+
+    // 80 days
+    // BEFORE: [0, 1, 1, 2, 1, 0, 0, 0, 0]
+    // AFTER: [424, 729, 558, 790, 739, 762, 991, 370, 571]
+    // Total fish count after 80 days is 5934
+
+    // sum up all the fish in the resulting array and print it out
     let total_fish: u64 = unique_fish_counts.into_iter().sum::<u64>();
-    println!("Fish count after {} days is {}", days, total_fish);
+    println!("Total fish count after {} days is {}", days, total_fish);
 }
 
 fn main() {
