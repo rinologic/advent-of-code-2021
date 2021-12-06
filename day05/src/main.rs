@@ -4,19 +4,22 @@ use regex::Regex;
 use std::fmt;
 use std::iter::Map;
 
+// My first time using structs and now I am starting to like Rust
+// I have been missing objects from Java.  This is similar and helps
+// me out a lot because I like to think of solutions in terms of objects
+
 struct Line {
     x1: i32,
     x2: i32,
     y1: i32,
     y2: i32,
-    //lx: i32,                   // the lower x value
-    //hx: i32,                   // the higher x value
-    //ly: i32,                   // the lower y value
-    //hy: i32,                   // the higher y value
     is_horizontal: bool,
-    is_vertical: bool
+    is_vertical: bool,
+    is_diagonal: bool
 }
 
+// Originally I thought of the numerical value as how "dense" the map point is
+// but later thought it is not really a good comparison but I never updated it.
 struct MapPoint {
     x: i32,
     y: i32,
@@ -64,7 +67,6 @@ impl fmt::Display for OceanFloor {
     }
 }
 
-
 fn load_input(filename: &str) -> BufReader<File> {
     let measurements = File::open(filename).unwrap();
     return BufReader::new(measurements);
@@ -79,15 +81,18 @@ fn parse_lines(coord_to_parse: &str) -> Line {
     let x2 = (&cap[3]).parse().unwrap();
     let y1 = (&cap[2]).parse().unwrap();
     let y2 = (&cap[4]).parse().unwrap();
+    // figure out of it is diagonal
+
     Line {
         x1, x2, y1, y2,
         is_horizontal: (y1 == y2),
         is_vertical: (x1 == x2),
+        is_diagonal: (x1-x2).abs() == (y1-y2).abs()
     }
 }
 
 fn main() {
-    let reader = load_input("input.txt");
+    let reader = load_input("input_sample.txt");
     let mut lines: Vec<Line> = vec![];
     let mut lines_filtered: Vec<Line> = vec![];
     for (_index, data_line) in reader.lines().enumerate() {
@@ -97,7 +102,8 @@ fn main() {
 
     // for now, only consider horizontal and vertical lines
     for l in lines {
-        if l.is_horizontal || l.is_vertical {
+        if l.is_horizontal || l.is_vertical || l.is_diagonal {
+        //if l.is_horizontal || l.is_vertical {
             lines_filtered.push(l);
         }
     }
@@ -106,7 +112,7 @@ fn main() {
     // Next I think we need to make a huge grid and initialize all the values to zero
 
     // Determine min x and min y so we can make some map points
-    // минималды - language practice while i work :D
+    // минималды - Practice Kazakh while I work :D
     let min_x1 = lines_filtered.iter().min_by_key(|c| c.x1).unwrap().x1;
     let min_x2 = lines_filtered.iter().min_by_key(|c| c.x2).unwrap().x2;
     let min_y1 = lines_filtered.iter().min_by_key(|c| c.y1).unwrap().y1;
@@ -134,6 +140,7 @@ fn main() {
     println!("OCEAN FLOOR DATA");
 
     // Now we will populate the Ocean Floor with one map point for each x and y coordinate
+    // probably not really necessary actually since many won't get hit (afterthought)
     for x_point in ocean_floor.min_x..ocean_floor.max_x + 1 {
         for y_point in ocean_floor.min_y..ocean_floor.max_y + 1 {
             let mp = MapPoint { x: x_point, y: y_point, density: 0 };
@@ -155,10 +162,8 @@ fn main() {
             if l.y1 > l.y2 { end_y = l.y1 } else { end_y = l.y2 }
             //print!("V: {},{} - {},{} |", l.x1, start_y, l.x2, end_y);
             for y_point in start_y..end_y + 1 {
-                //print!("{},{} ", l.x1, y_point);
-                set_point_value_density(&mut ocean_floor, l.x1, y_point, 1);
+                register_line_hit(&mut ocean_floor, l.x1, y_point, 1);
             }
-            //println!();
         }
 
         // register horizontal hits
@@ -170,34 +175,49 @@ fn main() {
             //print!("H: {},{} - {},{} |", start_x, l.y1, end_x, l.y2);
             for x_point in start_x..end_x + 1 {
                 //print!("{},{} ", x_point, l.y1)
-                set_point_value_density(&mut ocean_floor, x_point, l.y1, 1);
+                register_line_hit(&mut ocean_floor, x_point, l.y1, 1);
             }
             //println!();
         }
 
+        // register diagonal hits
+        // took me a while to come up with this strategy, probably a better way
+        if l.is_diagonal {
+            //print!("D: {},{} - {},{} |", l.x1, l.y1, l.x2, l.y2);
+            let steps = (l.x1-l.x2).abs();
+            let mut y_rises = false;
+            let mut x_rises = false;
+            if l.x2 > l.x1 { x_rises = true; }
+            if l.y2 > l.y1 { y_rises = true; }
+            let mut x_changer = 0;
+            let mut y_changer= 0;
+            for x in 0..steps+1 {
+                //print!("{},{} ", l.x1+x_changer, l.y1+y_changer);
+                register_line_hit(&mut ocean_floor, l.x1+x_changer, l.y1+y_changer, 1);
+                if x_rises { x_changer += 1} else { x_changer -= 1}
+                if y_rises { y_changer += 1} else { y_changer -= 1}
+            }
+            //println!();
+        }
         iterations += 1;
         println!("{}/{} iterations complete", iterations, lines_filtered.len());
     }
 
 
     // Print out the ocean floor and count danger zones! 
-    // waaaaay to slow with my super inefficient map point getter/setter on big maps
-    println!("Calculating danger zones");
-    //let mut danger_zones = 0;
-    //for x_point in ocean_floor.min_x..ocean_floor.max_x+1 {
-    //  for y_point in ocean_floor.min_y..ocean_floor.max_y+1 {
-    //    let map_value: i32 = get_map_point_density(&ocean_floor, x_point, y_point);
-    //    if map_value == 0 {
-    //print!("{:width$}", ".", width = 2)
-    //       } else {
-    //print!("{:width$}", map_value , width = 2)
-    //      }
-    //     if map_value >= 2 {
-    //        danger_zones += 1;
-    //   }
-    //}
-    //println!();
-    //}
+    // Definitely want to comment this out if you use the full data set
+    println!("\nPrinting Ocean Floor Map");
+    for x_point in ocean_floor.min_x..ocean_floor.max_x+1 {
+         for y_point in ocean_floor.min_y..ocean_floor.max_y+1 {
+           let map_value: i32 = get_line_hits(&ocean_floor, x_point, y_point);
+           if map_value == 0 {
+                print!("{:width$}", ".", width = 2)
+           } else {
+                print!("{:width$}", map_value , width = 2)
+           }
+       }
+       println!();
+    }
     println!("DANGER ZONES: {}", get_danger_zones(&ocean_floor));
 }
 
@@ -212,17 +232,26 @@ fn get_danger_zones(ocean_floor: &OceanFloor) -> i32 {
     return danger_zones;
 }
 
+// I want to do these transactions as follows but I need to implement FromIterator<MapPoint>
+// Until then, this code is super slow on the large data set.
+// let map_point: MapPoint = ocean_floor.map_points.into_iter().filter(|mp| mp.x == x_point && mp.y == y_point).collect();
+//
+// Resulting error:
+// .collect() value of type `MapPoint` cannot be built from `std::iter::Iterator<Item=MapPoint>`
+// help: the trait `FromIterator<MapPoint>` is not implemented for `MapPoint`
 
-fn get_map_point_density(ocean_floor: &OceanFloor, x_point: i32, y_point:i32) -> i32 {
-    let mut density:i32 = 0;
+// Given an x, y coordinate, returns back the number of times this point has been hit by a line
+fn get_line_hits(ocean_floor: &OceanFloor, x_point: i32, y_point:i32) -> i32 {
+    let mut line_hits:i32 = 0;
     for mp in ocean_floor.map_points.iter() {
         if mp.x == x_point && mp.y == y_point {
-            density = mp.density;
+            line_hits = mp.density;
         }
     }
-    return density;
+    return line_hits;
 }
-fn set_point_value_density(ocean_floor: &mut OceanFloor, x_point: i32, y_point:i32, value:i32) {
+
+fn register_line_hit(ocean_floor: &mut OceanFloor, x_point: i32, y_point:i32, value:i32) {
     for mp in ocean_floor.map_points.iter_mut() {
         if mp.x == x_point && mp.y == y_point {
             mp.density = mp.density + value;
