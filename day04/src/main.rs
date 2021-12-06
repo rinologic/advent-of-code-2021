@@ -162,7 +162,7 @@ fn part_two() {
     let board_height = 5;
     let mut game_boards = vec![vec![vec![0; board_width]; board_height]];
     let mut match_boards = vec![vec![vec![0; board_width]; board_height]];
-    let mut winning_boards:Vec<usize> = vec![];  // track winning boards
+      // track winning boards
     let mut winning_numbers:Vec<i32> = vec![];   // track winning numbers - if had more time, would make a board object to track various properties
 
     // Load the boards up with the board data
