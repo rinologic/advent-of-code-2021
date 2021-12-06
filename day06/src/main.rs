@@ -37,12 +37,9 @@ fn part_one() {
             if timer != 0 {
                 fish.timer = fish.timer -1;
             } else {
-                // Reset fish's timer to six
+                // reset fish's timer to six
                 fish.timer = 6;
-                add_fish_count += 1;
-                // And create a new fish
-                //let new_fish = Fish { timer: 8 };
-                //fishes.push(new_fish);
+                add_fish_count += 1; // have to push outside of loop
             }
         }
         if add_fish_count > 0 {
