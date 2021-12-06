@@ -4,6 +4,9 @@ struct Fish {
 
 
 fn part_one() {
+
+    println!("\nPART ONE");
+
     let mut fishes: Vec<Fish> = vec![];
 
     // Sample data
@@ -61,17 +64,37 @@ fn part_one() {
 }
 
 fn part_two() {
-    let mut fishes: Vec<Fish> = vec![];
+
+    println!("\nPART TWO");
 
     // Sample data
-    let fish_timers = [ 3 , 4 , 3, 1, 2 ];
-    let days = 80;
+    //let fish_timers = [ 3 , 4 , 3, 1, 2 ];
+    //let days = 80;
 
-    // Put the timers into a vector so we can get unique items
-    let mut fish_timers_vec: Vec<i32> = vec![];
-    for i in 0..fish_timers.len() {
-        fish_timers_vec.push(fish_timers[i]);
+    // Real data
+    let fish_timers = [ 5,1,5,3,2,2,3,1,1,4,2,4,1,2,1,4,1,1,5,3,5,1,5,3,1,2,4,4,1,1,3,1,1,3,1,1,5,1,5,4,5,4,5,1,3,2,4,3,5,3,5,4,3,1,4,3,1,1,1,4,5,1,1,1,2,1,2,1,1,4,1,4,1,1,3,3,2,2,4,2,1,1,5,3,1,3,1,1,4,3,3,3,1,5,2,3,1,3,1,5,2,2,1,2,1,1,1,3,4,1,1,1,5,4,1,1,1,4,4,2,1,5,4,3,1,2,5,1,1,1,1,2,1,5,5,1,1,1,1,3,1,4,1,3,1,5,1,1,1,5,5,1,4,5,4,5,4,3,3,1,3,1,1,5,5,5,5,1,2,5,4,1,1,1,2,2,1,3,1,1,2,4,2,2,2,1,1,2,2,1,5,2,1,1,2,1,3,1,3,2,2,4,3,1,2,4,5,2,1,4,5,4,2,1,1,1,5,4,1,1,4,1,4,3,1,2,5,2,4,1,1,5,1,5,4,1,1,4,1,1,5,5,1,5,4,2,5,2,5,4,1,1,4,1,2,4,1,2,2,2,1,1,1,5,5,1,2,5,1,3,4,1,1,1,1,5,3,4,1,1,2,1,1,3,5,5,2,3,5,1,1,1,5,4,3,4,2,2,1,3 ];
+    let days = 256;
+
+    // Create another array to hold the total unique fish timer counts in the fish timers
+    let mut unique_fish_counts = [0_u64; 9];
+    for fish_timer in fish_timers {
+        unique_fish_counts[fish_timer] += 1;
     }
+
+    //println!("{:?}", total_fish);
+
+    // for _day in 0..days {
+    //     unique_fish_counts.rotate_left(1);
+    //     println!("{:?}", unique_fish_counts);
+    // }
+
+    for _day in 0..days {
+        unique_fish_counts.rotate_left(1);
+        unique_fish_counts[6] += unique_fish_counts[8];
+    }
+
+    let total_fish: u64 = unique_fish_counts.into_iter().sum::<u64>();
+    println!("Fish count after {} days is {}", days, total_fish);
 }
 
 fn main() {
