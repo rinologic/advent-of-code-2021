@@ -3,6 +3,7 @@ use std::io::{BufRead, BufReader};
 use regex::Regex;
 use std::fmt;
 use std::iter::Map;
+use std::iter::FromIterator;
 
 // My first time using structs and now I am starting to like Rust
 // I have been missing objects from Java.  This is similar and helps
@@ -24,16 +25,6 @@ struct MapPoint {
     x: i32,
     y: i32,
     density: i32,
-}
-
-impl MapPoint {
-    fn new() -> Self {
-        MapPoint {
-                  x: 0,
-                  y: 0,
-            density: 0        // will track how dangerous this point is
-        }
-    }
 }
 
 struct OceanFloor {
@@ -92,7 +83,16 @@ fn parse_lines(coord_to_parse: &str) -> Line {
 }
 
 fn main() {
-    let reader = load_input("input.txt");
+
+    // sample data
+    let print_map:bool = true;
+    let reader = load_input("input_sample.txt");
+
+    // full data
+    //let print_map:bool = false;
+    //let reader = load_input("input.txt");
+
+
     let mut lines: Vec<Line> = vec![];
     let mut lines_filtered: Vec<Line> = vec![];
     for (_index, data_line) in reader.lines().enumerate() {
@@ -204,20 +204,25 @@ fn main() {
     }
 
 
-    // Print out the ocean floor and count danger zones! 
-    // Definitely want to comment this out if you use the full data set
-    // println!("\nPrinting Ocean Floor Map");
-    // for x_point in ocean_floor.min_x..ocean_floor.max_x+1 {
-    //      for y_point in ocean_floor.min_y..ocean_floor.max_y+1 {
-    //        let map_value: i32 = get_line_hits(&ocean_floor, x_point, y_point);
-    //        if map_value == 0 {
-    //             print!("{:width$}", ".", width = 2)
-    //        } else {
-    //             print!("{:width$}", map_value , width = 2)
-    //        }
-    //    }
-    //    println!();
-    // }
+    // Print out the ocean floor and count danger zones!
+    // Good idea to comment this out if you use the full data set
+    // Note that this prints it out rotated 90 degrees counter-clockwise
+    // and flipped from what you see on the AoC day 5 puzzle page
+    if print_map {
+        println!("\nPrinting Ocean Floor Map");
+        for x_point in ocean_floor.min_x..ocean_floor.max_x + 1 {
+            for y_point in ocean_floor.min_y..ocean_floor.max_y + 1 {
+                let map_value: i32 = get_line_hits(&ocean_floor, x_point, y_point);
+                if map_value == 0 {
+                    print!("{:width$}", ".", width = 2)
+                } else {
+                    print!("{:width$}", map_value, width = 2)
+                }
+            }
+            println!();
+        }
+    }
+
     println!("DANGER ZONES: {}", get_danger_zones(&ocean_floor));
 }
 
@@ -252,14 +257,12 @@ fn get_line_hits(ocean_floor: &OceanFloor, x_point: i32, y_point:i32) -> i32 {
 }
 
 fn register_line_hit(ocean_floor: &mut OceanFloor, x_point: i32, y_point:i32, value:i32) {
-    let mut found: bool = false;
-    for mp in ocean_floor.map_points.iter_mut() {
-        if mp.x == x_point && mp.y == y_point {
-            mp.density = mp.density + value;
-            found = true;
-        }
-    }
-    if !found {
+    // see if the point exists, if so update it
+    let map_point = ocean_floor.map_points.iter_mut().find(|mp| mp.x == x_point && mp.y == y_point);
+    if let Some(point) = map_point {
+        point.density += value;
+    // if not, create a new one
+    } else {
         let mp = MapPoint { x: x_point, y: y_point, density: value };
         ocean_floor.map_points.push(mp);
     }
