@@ -1,5 +1,5 @@
-.DEFAULT_GOAL := default
 day = day09
+.DEFAULT_GOAL := default
 data = data.txt
 sample = data_sample.txt
 
