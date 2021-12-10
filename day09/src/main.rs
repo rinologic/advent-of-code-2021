@@ -3,8 +3,10 @@ use std::io::{self, Read};
 fn part_one() {
 
     // Load the data directly into a vector of vectors of type i32.
-    // We map the lines to a string, then map the string chars
-    // in 2nd mapping
+    // We map the lines to a string, then map the strings to chars
+    // in the second mapping and cast them to int 32s.
+    // really cool to leverage this ability.  starting to appreciate
+    // the features of Rust...
     let heightmap: Vec<Vec<i32>> = load_data()
         .lines()
         .map(|line| {
