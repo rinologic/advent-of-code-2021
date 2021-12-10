@@ -4,16 +4,18 @@ Starting today I will use a new method of loading the puzzle data file into the 
 ```bash
 make sample
 ```
-To run it against the live data, open a command prompt and type:
+To run it against the standard data type:
 ```bash
 make
 ```
-To create a new day's project, I can simply run the following commands from the parent directory:
+This assumes the sample data is called data_sample.txt and the standard data is called data.txt though those values can be changed in the Makefile.
+
+To create a new day's project, I simply run the following commands from the parent directory:
 ```bash
 cargo new dayX
 cp ../dayX-1/Makefile dayX
 ```
-Then update the first line of the file with that day number:
+Then update the first line of the Makefil with that day's day number:
 ```bash
 day = dayX
 ```
