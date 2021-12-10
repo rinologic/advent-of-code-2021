@@ -13,7 +13,7 @@ fn part_one() {
             .collect()
     }).collect();
     //println!("{:?}", heightmap);
-    
+
     let height = heightmap.len();
     let width = heightmap[0].len();
     //println!("W={} H={}", width, height);
@@ -41,9 +41,11 @@ fn part_one() {
             if col < width-1 && map_value >= heightmap[row][col+1] {
                 continue
             }
+            // if we made it this far, must be a lowpoint
             low_points.push(map_value);
         }
     }
+    // now total up the low points, adding one to each value
     let mut total = 0;
     for low_point in low_points.iter() {
         total += low_point+1;
