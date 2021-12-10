@@ -25,23 +25,23 @@ fn part_one() {
         for col in 0..width {
             let map_value = heightmap[row][col];
 
-            // look at row above current row
+            // compare to row above current row if not on row zero
             if row > 0 && map_value >= heightmap[row-1][col] {
                 continue;
             }
-            // look at row below current row
+            // compare to row below current row if not on last row
             if row < height-1 && map_value >= heightmap[row+1][col] {
                 continue;
             }
-            // look at column to the left
+            // compare to column to the left if not on column zero
             if col > 0 && map_value >= heightmap[row][col-1] {
                 continue
             }
-            // look at column to the right
+            // compare to column to the right if not on last column
             if col < width-1 && map_value >= heightmap[row][col+1] {
                 continue
             }
-            // if we made it this far, must be a lowpoint
+            // if we made it this far, we found a low point
             low_points.push(map_value);
         }
     }
