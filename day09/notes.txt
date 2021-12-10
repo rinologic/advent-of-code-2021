@@ -1,0 +1,7 @@
+Initial way of loading which kinda worked, just noting here for reference
+
+    //let data = load_data(); // store in variable to prevent drop before next expression
+    //let lines: Vec<&str> = data.lines().collect();
+
+    //let width = lines[0].len();
+    //let height = lines.len();
