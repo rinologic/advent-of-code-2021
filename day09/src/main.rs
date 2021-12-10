@@ -23,6 +23,8 @@ fn part_one() {
     // hold low point for later summing up
     let mut low_points: Vec<i32> = Vec::new();
 
+    // iterate through the heightmap cell by cell
+    // skip the cell if we find a greater or equal value adjacent
     for row in 0..height {
         for col in 0..width {
             let map_value = heightmap[row][col];
